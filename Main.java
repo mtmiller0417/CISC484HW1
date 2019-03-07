@@ -5,8 +5,12 @@ import java.io.IOException;
 
 public class Main {
 
-	ArrayList<ArrayList<Integer>> data;
-	String[] attrNames;
+	ArrayList<ArrayList<Integer>> trainingData;
+	ArrayList<ArrayList<Integer>> validationData;
+	ArrayList<ArrayList<Integer>> testingData;
+	String[] trainingDataNames;
+	String[] validationDataNames;
+	String[] testingDataNames;
 	String trainingData1 = "data_sets1/training_set.csv";
 	String validationData1 = "data_sets1/validation_set.csv";
 	String testData1 = "data_sets1/test_set.csv";
@@ -36,54 +40,54 @@ public class Main {
 			System.out.println(s);
 		}
 
-		data = new ArrayList<ArrayList<Integer>>();
-		br = new BufferedReader(new FileReader(trainingData1));
-		String line = "";
-		String csvSplitby = ",";
-		line = br.readLine();
-
-		//Read the first line of the file (attribute names)
-		attrNames = line.split(csvSplitby);
-
-		System.out.println("Number of attributes in data set: " + attrNames.length);
-		
-
-		//Read the rest of the data files and store them in appropriate data structure
-
-    for(String s: attrNames){
-			data.add(new ArrayList<Integer>());
-		}
-
-		while((line = br.readLine()) != null){
-			String[] row = line.split(csvSplitby);
-
-			for(int i = 0; i < data.size(); i++)
-			 	data.get(i).add(Integer.parseInt(row[i]));
-		 }
-
-	 	System.out.println("Size " + data.get(0).size());
-	
-
-
-		br.close();
+		parseInput(trainingData, trainingDataNames, trainingData1);
+		parseInput(validationData, validationDataNames, validationData1);
+		parseInput(testingData, testingDataNames, testData1);
+		System.out.println(trainingData.size());
 		}
 
 		//Inputs?
 		// Set(s)?, holding variables
-		public void parseInput(ArrayList<ArrayList<Integer>> set, String [] attNames){
+		public void parseInput(ArrayList<ArrayList<Integer>> set, String [] attNames, String fileLocation) throws IOException{
+			set = new ArrayList<ArrayList<Integer>>();
+			br = new BufferedReader(new FileReader(fileLocation));
+			String line = "";
+			String csvSplitby = ",";
+			line = br.readLine();
 
+			//Read the first line of the file (attribute names)
+			attNames = line.split(csvSplitby);
+
+			System.out.println("Number of attributes in data set: " + attNames.length);
+
+			//Read the rest of the data files and store them in appropriate data structure
+
+	    for(String s: attNames){
+				set.add(new ArrayList<Integer>());
+			}
+
+			while((line = br.readLine()) != null){
+				String[] row = line.split(csvSplitby);
+
+				for(int i = 0; i < set.size(); i++)
+				 	set.get(i).add(Integer.parseInt(row[i]));
+			 }
+
+		 System.out.println("Size " + set.get(0).size());
+
+			br.close();
 		}
 
 		public double varianceImpurtity(ArrayList<ArrayList<Integer>> bigSet){
-
-			double varianceImpurtity;
+			int arraySize = bigSet.get(0).size();
+			/*double varianceImpurtity;
 			int k0, k1 = 0;
 			int arraySize = bigSet.get(0).size();
 
 			for(int i = 0; i < arraySize; i++){
-				if()
-			}
-
+				
+			}*/
+			System.out.println(arraySize);
 			return .0;
 		}
 }
