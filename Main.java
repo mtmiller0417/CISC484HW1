@@ -52,7 +52,6 @@ public class Main {
 		}
 
 		public void parseInput(ArrayList<ArrayList<Integer>> set, String [] attNames, String fileLocation) throws IOException{
-			//set = new ArrayList<ArrayList<Integer>>();
 			br = new BufferedReader(new FileReader(fileLocation));
 			String line = "";
 			String csvSplitby = ",";
