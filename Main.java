@@ -21,6 +21,7 @@ public class Main {
 	public static void main(String [] args){
 		try{
 			Main m = new Main(args);
+			m.hashCode();//Just used to get rid of error 
 		}
 		catch (Exception e) {
 			System.out.println("ERROR");
@@ -66,6 +67,7 @@ public class Main {
 
 	    for(String s: attNames){
 				set.add(new ArrayList<Integer>());
+				s.length();// Used to get rid of error of unused variable
 			}
 
 			while((line = br.readLine()) != null){
