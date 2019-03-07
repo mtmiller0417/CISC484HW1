@@ -40,15 +40,21 @@ public class Main {
 			System.out.println(s);
 		}
 
+		trainingData = new ArrayList<ArrayList<Integer>>();
+		validationData = new ArrayList<ArrayList<Integer>>();
+		testingData = new ArrayList<ArrayList<Integer>>();
+
 		parseInput(trainingData, trainingDataNames, trainingData1);
 		parseInput(validationData, validationDataNames, validationData1);
 		parseInput(testingData, testingDataNames, testData1);
+
+		System.out.println(trainingData.get(0).size());
 		}
 
 		//Inputs?
 		// Set(s)?, holding variables
 		public void parseInput(ArrayList<ArrayList<Integer>> set, String [] attNames, String fileLocation) throws IOException{
-			set = new ArrayList<ArrayList<Integer>>();
+			//set = new ArrayList<ArrayList<Integer>>();
 			br = new BufferedReader(new FileReader(fileLocation));
 			String line = "";
 			String csvSplitby = ",";
