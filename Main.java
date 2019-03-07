@@ -46,6 +46,7 @@ public class Main {
 		attrNames = line.split(csvSplitby);
 
 		System.out.println("Number of attributes in data set: " + attrNames.length);
+		
 
 		//Read the rest of the data files and store them in appropriate data structure
 
@@ -60,7 +61,9 @@ public class Main {
 			 	data.get(i).add(Integer.parseInt(row[i]));
 		 }
 
-	 System.out.println("Size " + data.get(0).size());
+	 	System.out.println("Size " + data.get(0).size());
+	
+
 
 		br.close();
 		}
@@ -69,5 +72,18 @@ public class Main {
 		// Set(s)?, holding variables
 		public void parseInput(ArrayList<ArrayList<Integer>> set, String [] attNames){
 
+		}
+
+		public double varianceImpurtity(ArrayList<ArrayList<Integer>> bigSet){
+
+			double varianceImpurtity;
+			int k0, k1 = 0;
+			int arraySize = bigSet.get(0).size();
+
+			for(int i = 0; i < arraySize; i++){
+				if()
+			}
+
+			return .0;
 		}
 }
