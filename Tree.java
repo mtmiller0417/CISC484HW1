@@ -133,6 +133,7 @@ public class Tree {
 		else
 			printString += "\n" + nodeString(node.one, prefix + " | ");
 		return printString;
+	}
 
 
 	double getEntropy(ArrayList<Integer> set){
