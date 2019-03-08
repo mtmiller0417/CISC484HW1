@@ -28,7 +28,7 @@ public class Tree {
 
 		@Override
 		public String toString(){
-			return ((Integer)index).toString();
+			return trainingDataNames[index];
 		}
 	}
 	
@@ -55,7 +55,7 @@ public class Tree {
 		ArrayList<Integer> subset1 = getSubset(node, 1);
 		if (isPure(subset0)) {
 			node.zero = null;
-			System.out.println(getResult(node, 0));
+			// System.out.println(getResult(node, 0));
 		} else {
 			int index = chooseRandomAttribute(subset0);
 			node.zero = new AttributeNode(index, subset0);
@@ -64,7 +64,7 @@ public class Tree {
 
 		if (isPure(subset1)) {
 			node.one = null;
-			System.out.println(getResult(node, 1));
+			// System.out.println(getResult(node, 1));
 		} else {
 			int index = chooseRandomAttribute(subset1);
 			node.one = new AttributeNode(index, subset1);
@@ -111,5 +111,27 @@ public class Tree {
 		if (subset.isEmpty())
 			return -1;
 		return trainingData.get(trainingData.size()-1).get(subset.get(0));
+	}
+	
+	public void printTree() {
+		if (root==null)
+			System.out.println("root is null");
+		else
+			System.out.println(nodeString(root, ""));
+	}
+
+	public String nodeString(AttributeNode node, String prefix) {
+		String printString = "";
+		printString += prefix + node + " = 0 : ";
+		if (node.zero == null)
+			printString += "" + getResult(node,0) + "\n";
+		else
+			printString += "\n" + nodeString(node.zero, prefix + " | ");
+		printString += prefix + node + " = 1 : ";
+		if (node.one == null)
+			printString += "" + getResult(node,1) + "\n";
+		else
+			printString += "\n" + nodeString(node.one, prefix + " | ");
+		return printString;
 	}
 }
