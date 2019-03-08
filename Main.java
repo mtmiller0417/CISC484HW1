@@ -45,14 +45,18 @@ public class Main {
 		validationData = new ArrayList<ArrayList<Integer>>();
 		testingData = new ArrayList<ArrayList<Integer>>();
 
-		parseInput(trainingData, trainingDataNames, trainingData1);
-		parseInput(validationData, validationDataNames, validationData1);
-		parseInput(testingData, testingDataNames, testData1);
+		trainingDataNames = new String[21];
+		validationDataNames = new String[21];
+		testingDataNames = new String[21];
+
+		trainingDataNames = parseInput(trainingData, trainingDataNames, trainingData1);
+		validationDataNames = parseInput(validationData, validationDataNames, validationData1);
+		testingDataNames = parseInput(testingData, testingDataNames, testData1);
 
 		System.out.println(trainingData.get(0).size());
-		}
+	}
 
-		public void parseInput(ArrayList<ArrayList<Integer>> set, String [] attNames, String fileLocation) throws IOException{
+		public String[] parseInput(ArrayList<ArrayList<Integer>> set, String[] attNames, String fileLocation) throws IOException{
 			br = new BufferedReader(new FileReader(fileLocation));
 			String line = "";
 			String csvSplitby = ",";
@@ -65,7 +69,7 @@ public class Main {
 
 			//Read the rest of the data files and store them in appropriate data structure
 
-	    for(String s: attNames){
+	    	for(String s: attNames){
 				set.add(new ArrayList<Integer>());
 				s.length();// Used to get rid of error of unused variable
 			}
@@ -77,8 +81,10 @@ public class Main {
 				 	set.get(i).add(Integer.parseInt(row[i]));
 			 }
 
-		 System.out.println("Size " + set.get(0).size());
+		 	System.out.println("Size " + set.get(0).size());
 
 			br.close();
+
+			return attNames;
 		}
 }
