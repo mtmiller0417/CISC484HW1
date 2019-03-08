@@ -112,5 +112,4 @@ public class Tree {
 			return -1;
 		return trainingData.get(trainingData.size()-1).get(subset.get(0));
 	}
-
 }
