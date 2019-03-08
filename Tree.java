@@ -2,8 +2,14 @@ import java.util.*;
 
 
 
-// Stuff About the Tree:
-// Each node of the tree is an attribute
+// TODO:
+//  * We'll still need to print in
+//  * We have to implement the post-pruning stuff
+//  * Replace the choose random stuff
+//  * Actual decision-making stuff (traverse tree):
+//  	* Null == leaf node
+//  	* Use checkResult of parent node's subset and leaf node's value
+//  	  to see what answer a leaf node gives
 
 public class Tree {
 	private AttributeNode root;
@@ -13,8 +19,8 @@ public class Tree {
 	public class AttributeNode {
 		int index;	// location of attribute in super array
 		ArrayList<Integer> subset; //array of acceptable index (values)
-		AttributeNode zero;	//left (Attribute=0)
-		AttributeNode one;	//right (Attribute=1)
+		AttributeNode zero;	//left (Attribute=0) means value of 0
+		AttributeNode one;	//right (Attribute=1) means value of 1
 		public AttributeNode(int index, ArrayList<Integer> subset) {
 			this.index = index;
 			this.subset = subset;
@@ -49,6 +55,7 @@ public class Tree {
 		ArrayList<Integer> subset1 = getSubset(node, 1);
 		if (isPure(subset0)) {
 			node.zero = null;
+			System.out.println(getResult(node, 0));
 		} else {
 			int index = chooseRandomAttribute(subset0);
 			node.zero = new AttributeNode(index, subset0);
@@ -57,6 +64,7 @@ public class Tree {
 
 		if (isPure(subset1)) {
 			node.one = null;
+			System.out.println(getResult(node, 1));
 		} else {
 			int index = chooseRandomAttribute(subset1);
 			node.one = new AttributeNode(index, subset1);
@@ -75,6 +83,7 @@ public class Tree {
 		return newSubset;
 	}
 
+	// Will be replaced by heurisitcs
 	int chooseRandomAttribute(ArrayList<Integer> subset){
 		Random random = new Random();
 		return random.nextInt(trainingData.size());
@@ -83,7 +92,8 @@ public class Tree {
 	// true if subset is pure
 	boolean isPure(ArrayList<Integer> subset){
 		if (subset.isEmpty()){ 	// TODO: not entirely sure what we do when
-			return true;		// a subset is empty
+			return true;		// a subset is empty, i think if empty we
+								// should ignore that leaf
 		}
 		int firstVal =
 			trainingData.get(trainingData.size()-1).get(subset.get(0));
@@ -93,8 +103,14 @@ public class Tree {
 		return true;
 	}
 
-	int getAnswer(){
-		return 0;
+	// Only use if Node's val leads to leaf node, this is kinda confusing
+	// should probably make more intuitive at some point idk
+	// -1 means subset is empty
+	int getResult(AttributeNode node, int val){
+		ArrayList<Integer> subset = getSubset(node, val);
+		if (subset.isEmpty())
+			return -1;
+		return trainingData.get(trainingData.size()-1).get(subset.get(0));
 	}
 
 }
