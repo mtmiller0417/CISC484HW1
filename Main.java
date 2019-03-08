@@ -21,6 +21,7 @@ public class Main {
 	public static void main(String [] args){
 		try{
 			Main m = new Main(args);
+			m.hashCode();//Just used to get rid of error 
 		}
 		catch (Exception e) {
 			System.out.println("ERROR");
@@ -51,10 +52,7 @@ public class Main {
 		System.out.println(trainingData.get(0).size());
 		}
 
-		//Inputs?
-		// Set(s)?, holding variables
 		public void parseInput(ArrayList<ArrayList<Integer>> set, String [] attNames, String fileLocation) throws IOException{
-			//set = new ArrayList<ArrayList<Integer>>();
 			br = new BufferedReader(new FileReader(fileLocation));
 			String line = "";
 			String csvSplitby = ",";
@@ -69,6 +67,7 @@ public class Main {
 
 	    for(String s: attNames){
 				set.add(new ArrayList<Integer>());
+				s.length();// Used to get rid of error of unused variable
 			}
 
 			while((line = br.readLine()) != null){
