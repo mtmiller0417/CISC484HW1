@@ -112,4 +112,69 @@ public class Tree {
 			return -1;
 		return trainingData.get(trainingData.size()-1).get(subset.get(0));
 	}
+
+	double getEntropy(ArrayList<Integer> set){
+		int p0 = 0, p1 = 0, p;
+		p = set.size();
+		//Get the number of p0's and p1's in the set
+		for(int x : set){
+			if(trainingData.get(trainingData.size()-1).get(x) == 0)	
+				p0++;
+			else if(trainingData.get(trainingData.size()-1).get(x) == 1)
+				p1++;
+		}
+
+		// Check if p0/p or p1/p is equal to 0...
+		// If so will cause an error when doing log
+		// If it is return entropy as 0
+
+		if(p0/p == 0 || p0/1 == 0)//This is only true when one is 'pure'
+			return 0;//This always equals 0
+		else //This is true if neither is 'pure'
+			return -(p0/p)*log2(p0/p) - (p1/p)*log2(p1/p);//Calculate and return Entropy
+		
+	}
+
+	//Used to calc log base 2
+	double log2(double d){
+		return (Math.log(d)/Math.log(2.0));
+	}
+
+	//Returns the index of the attribute that provides the most gain
+	//double entropyS = entropy of the big set, used to calculate entropy gain
+	//int index = the index of current attribute, excluded from seach when looking
+	//ArrayList<Integer> set = Set of indexes that make up current subset
+	int maxGain(double entropyS, int index, ArrayList<Integer> set){
+		double[] gain = new double[trainingData.size()-1];//Used to hold the gain for each attribute excpet itself(index) and the class attribute
+		gain[index] = 0.0;
+		for(ArrayList<Integer> attribute : trainingData){
+			//If not equal to the index or the class attribute(last attribute in trainingData)
+			if(trainingData.indexOf(attribute) != index || trainingData.indexOf(attribute) != trainingData.size()-1){
+				//Create subset0
+				//double s0 = entropy(subset0)
+				//Create subset1
+				//double s1 = entropy(subset0)
+				ArrayList <Integer> subset0 = new ArrayList<Integer>(); 
+				ArrayList <Integer> subset1 = new ArrayList<Integer>();
+				for(int x : set){
+					if(x == 0)
+						subset0.add(new Integer(0));
+					else if(x == 1)
+						subset1.add(new Integer(1));
+				} 
+				double s0 = getEntropy(subset0);
+				double s1 = getEntropy(subset1);
+				gain[trainingData.indexOf(attribute)] = entropyS - ((subset0.size()/set.size())*s0 + ((subset1.size()/set.size())*s1));
+			}
+		}
+		double max = 0;
+		int maxIndex = 0;//i = index of the max
+		for(int x = 0; x < gain.length; x++){
+			if(gain[x] > max){
+				max = gain[x];//Update max
+				maxIndex = x;//Update the index of the max
+			}
+		}
+		return maxIndex;
+	}
 }
