@@ -57,19 +57,19 @@ public class Tree {
 
 	//Recursive function that expands given node by checking if it is pure 
 	public void expandNode(AttributeNode node){
-		if (isPure(node->set)) {
+		if (isPure(node.subset)) {
 			node.zero = null;
 			node.one = null;
-			node.value = trainingData.get(trainingData.size() - 1).get(node.set.get(0));
+			node.value = trainingData.get(trainingData.size() - 1).get(node.subset.get(0));
 		} else {
 			node.value = -1;
-			double entropyS = entropy(node.set);
-			int ind = maxGain(entropyS, node.set, node.attrIgnore);
+			double entropyS = getEntropy(node.subset);
+			int ind = maxGain(entropyS, node.subset, node.attrIgnore);
 			node.index = ind;
 
 			ArrayList<Integer> subset0 = getSubset(node, 0);
 			ArrayList<Integer> subset1 = getSubset(node, 1);
-			ArrayList<Integer> chAtrr = node.attrIgnore;
+			ArrayList<Integer> chAttr = node.attrIgnore;
 			chAttr.add(node.index); //adding attributes we've already split on 	
 
 			node.zero = new AttributeNode(-1, subset0, chAttr);
@@ -175,12 +175,12 @@ public class Tree {
 	//attrIgnore = attributes that have already been split on
 	int maxGain(double entropyS, ArrayList<Integer> set, ArrayList<Integer> attrIgnore){
 		double[] gain = new double[trainingData.size() - 1]; //Used to hold the gain for each attribute excpet the class attribute
-		gain[index] = 0.0;
-		for(int attribute = 0; i < trainingData.size - 2; i++)
+		// gain[index] = 0.0;
+		for(int attribute = 0; attribute < trainingData.size() - 2; attribute++)
 			if (attrIgnore.contains(attribute))
 				gain[attribute] = 0.0; //if attribute has already been split on, set gain to 0
 			else {
-				ArrayList<Integer> myList = trainingData.get(i);
+				ArrayList<Integer> myList = trainingData.get(attribute);
 				ArrayList <Integer> subset0 = new ArrayList<Integer>(); 
 				ArrayList <Integer> subset1 = new ArrayList<Integer>();
 				for(int x : myList){
