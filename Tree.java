@@ -17,13 +17,16 @@ public class Tree {
 	String[] trainingDataNames;
 
 	public class AttributeNode {
-		int index;	// location of attribute in super array
-		ArrayList<Integer> subset; //array of acceptable index (values)
+		int index;	// location of attribute in super array; leaf nodes have index -1
+		ArrayList<Integer> subset; //array of acceptable index (rows)
+		ArrayList<Integer> attrIgnore; //attributes to ignore (columns);
 		AttributeNode zero;	//left (Attribute=0) means value of 0
 		AttributeNode one;	//right (Attribute=1) means value of 1
-		public AttributeNode(int index, ArrayList<Integer> subset) {
+		int value; //-1 for internal nodes, 0 or 1 for leaf nodes
+		public AttributeNode(int index, ArrayList<Integer> subset, ArrayList<Integer> attrIgnore) {
 			this.index = index;
 			this.subset = subset;
+			this.attrIgnore = attrIgnore;
 		}
 
 		@Override
@@ -44,35 +47,38 @@ public class Tree {
 		for(int i = 0; i < trainingData.get(0).size(); i++) {
 			set.add(i);
 		}
-		int rootIndex = chooseRandomAttribute(set);
-		root = new AttributeNode(rootIndex, set);
+		ArrayList<Integer> attr = new ArrayList<>();
+		attr.add(trainingData.size() - 1); //ignore class variable
+		int rootIndex = -1; //since we don't know the initial attribute to split on
+		
+		root = new AttributeNode(rootIndex, set, attr);
 		expandNode(root);
 	}
 
-		
+	//Recursive function that expands given node by checking if it is pure 
 	public void expandNode(AttributeNode node){
-		ArrayList<Integer> subset0 = getSubset(node, 0);
-		ArrayList<Integer> subset1 = getSubset(node, 1);
-		if (isPure(subset0)) {
+		if (isPure(node->set)) {
 			node.zero = null;
-			// System.out.println(getResult(node, 0));
-		} else {
-			int index = chooseRandomAttribute(subset0);
-			node.zero = new AttributeNode(index, subset0);
-			expandNode(node.zero);
-		}
-
-		if (isPure(subset1)) {
 			node.one = null;
-			// System.out.println(getResult(node, 1));
+			node.value = trainingData.get(trainingData.size() - 1).get(node.set.get(0));
 		} else {
-			int index = chooseRandomAttribute(subset1);
-			node.one = new AttributeNode(index, subset1);
+			node.value = -1;
+			double entropyS = entropy(node.set);
+			int ind = maxGain(entropyS, node.set, node.attrIgnore);
+			node.index = ind;
+
+			ArrayList<Integer> subset0 = getSubset(node, 0);
+			ArrayList<Integer> subset1 = getSubset(node, 1);
+			ArrayList<Integer> chAtrr = node.attrIgnore;
+			chAttr.add(node.index); //adding attributes we've already split on 	
+
+			node.zero = new AttributeNode(-1, subset0, chAttr);
+			node.one = new AttributeNode(-1, subset1, chAttr);
+			expandNode(node.zero);
 			expandNode(node.one);
 		}
-		
 	}
-
+	
 	// Returns the subset of usable data at an attribue node
 	// given an attribute value for that node
 	ArrayList<Integer> getSubset(AttributeNode parent, int val) {
@@ -165,34 +171,32 @@ public class Tree {
 
 	//Returns the index of the attribute that provides the most gain
 	//double entropyS = entropy of the big set, used to calculate entropy gain
-	//int index = the index of current attribute, excluded from seach when looking
 	//ArrayList<Integer> set = Set of indexes that make up current subset
-	int maxGain(double entropyS, int index, ArrayList<Integer> set){
-		double[] gain = new double[trainingData.size()-1];//Used to hold the gain for each attribute excpet itself(index) and the class attribute
+	//attrIgnore = attributes that have already been split on
+	int maxGain(double entropyS, ArrayList<Integer> set, ArrayList<Integer> attrIgnore){
+		double[] gain = new double[trainingData.size() - 1]; //Used to hold the gain for each attribute excpet the class attribute
 		gain[index] = 0.0;
-		for(ArrayList<Integer> attribute : trainingData){
-			//If not equal to the index or the class attribute(last attribute in trainingData)
-			if(trainingData.indexOf(attribute) != index || trainingData.indexOf(attribute) != trainingData.size()-1){
-				//Create subset0
-				//double s0 = entropy(subset0)
-				//Create subset1
-				//double s1 = entropy(subset0)
+		for(int attribute = 0; i < trainingData.size - 2; i++)
+			if (attrIgnore.contains(attribute))
+				gain[attribute] = 0.0; //if attribute has already been split on, set gain to 0
+			else {
+				ArrayList<Integer> myList = trainingData.get(i);
 				ArrayList <Integer> subset0 = new ArrayList<Integer>(); 
 				ArrayList <Integer> subset1 = new ArrayList<Integer>();
-				for(int x : set){
+				for(int x : myList){
 					if(x == 0)
-						subset0.add(new Integer(0));
+						subset0.add(x);
 					else if(x == 1)
-						subset1.add(new Integer(1));
-				} 
+						subset1.add(x);
+				}
 				double s0 = getEntropy(subset0);
 				double s1 = getEntropy(subset1);
-				gain[trainingData.indexOf(attribute)] = entropyS - ((subset0.size()/set.size())*s0 + ((subset1.size()/set.size())*s1));
+				gain[attribute] = entropyS - (((subset0.size()/myList.size())*s0) + ((subset1.size()/myList.size())*s1));
 			}
-		}
-		double max = 0;
-		int maxIndex = 0;//i = index of the max
-		for(int x = 0; x < gain.length; x++){
+			
+		double max = gain[0];
+		int maxIndex = 0; //i = index of the max
+		for(int x = 1; x < gain.length; x++){
 			if(gain[x] > max){
 				max = gain[x];//Update max
 				maxIndex = x;//Update the index of the max
