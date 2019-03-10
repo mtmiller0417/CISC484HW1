@@ -58,6 +58,7 @@ public class Tree {
 	//Recursive function that expands given node by checking if it is pure 
 	public void expandNode(AttributeNode node){
 		if (isPure(node.subset)) {
+			//System.out.printf("in is pure");
 			node.zero = null;
 			node.one = null;
 			node.value = trainingData.get(trainingData.size() - 1).get(node.subset.get(0));
@@ -67,19 +68,30 @@ public class Tree {
 			//System.out.println(""+entropyS);
 			int ind = maxGain(entropyS, node.subset, node.attrIgnore);
 			node.index = ind;
-			System.out.printf("%d", ind);
+			//System.out.printf("%d", ind);
 			ArrayList<Integer> subset0 = getSubset(node, 0);
 			ArrayList<Integer> subset1 = getSubset(node, 1);
 
 			ArrayList<Integer> chAttr = node.attrIgnore;
 			chAttr.add(node.index); //adding attributes we've already split on 	
-
-			node.zero = new AttributeNode(-1, subset0, chAttr);
-			node.one = new AttributeNode(-1, subset1, chAttr);
-			//TO DO: ONLY WORKS IF ONE OF THESE EXPANDNODES IS COMMENTED OUT
-			expandNode(node.zero); 
-			//System.out.println();
-			//expandNode(node.one);
+			if (subset0.isEmpty()) {
+				node.zero = null;
+				node.one = new AttributeNode(-1, subset1, chAttr);
+				node.one.value = 1;
+				node.one.one = node.one.zero = null;
+			}	
+			else if (subset1.isEmpty()) {
+				node.one = null;
+				node.zero = new AttributeNode(-1, subset1, chAttr);
+				node.zero.value = 0;
+				node.zero.zero = node.zero.one = null;
+			}
+			else {
+				node.one = new AttributeNode(-1, subset1, chAttr);
+				node.zero = new AttributeNode(-1, subset0, chAttr);
+				expandNode(node.zero);
+				expandNode(node.one);
+			}			
 		}
 	}
 	
@@ -101,10 +113,10 @@ public class Tree {
 
 	// true if subset is pure
 	boolean isPure(ArrayList<Integer> subset){
-		if (subset.isEmpty()){ 	// TODO: not entirely sure what we do when
+		/*if (subset.isEmpty()){ 	// TODO: not entirely sure what we do when
 			return true;		// a subset is empty, i think if empty we
 								// should ignore that leaf
-		}
+		}*/
 		int firstVal =
 			trainingData.get(trainingData.size()-1).get(subset.get(0));
 		for (Integer i: subset)
@@ -144,7 +156,6 @@ public class Tree {
 			printString += "\n" + nodeString(node.one, prefix + " | ");
 		return printString;
 	}
-
 
 	double getEntropy(ArrayList<Integer> set){
 		int p0 = 0, p1 = 0, p;
