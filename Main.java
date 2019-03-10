@@ -40,16 +40,23 @@ public class Main {
 			System.out.println(s);
 		}
 
+		trainingData = new ArrayList<ArrayList<Integer>>();
+		validationData = new ArrayList<ArrayList<Integer>>();
+		testingData = new ArrayList<ArrayList<Integer>>();
+
 		parseInput(trainingData, trainingDataNames, trainingData1);
 		parseInput(validationData, validationDataNames, validationData1);
 		parseInput(testingData, testingDataNames, testData1);
-		System.out.println(trainingData.size());
+
+		varianceImpurtity(trainingData);
+		varianceImpurtity(validationData);
+
 		}
 
 		//Inputs?
 		// Set(s)?, holding variables
 		public void parseInput(ArrayList<ArrayList<Integer>> set, String [] attNames, String fileLocation) throws IOException{
-			set = new ArrayList<ArrayList<Integer>>();
+			//set = new ArrayList<ArrayList<Integer>>();
 			br = new BufferedReader(new FileReader(fileLocation));
 			String line = "";
 			String csvSplitby = ",";
@@ -80,14 +87,25 @@ public class Main {
 
 		public double varianceImpurtity(ArrayList<ArrayList<Integer>> bigSet){
 			int arraySize = bigSet.get(0).size();
-			/*double varianceImpurtity;
-			int k0, k1 = 0;
-			int arraySize = bigSet.get(0).size();
+			int classIndex = bigSet.size();
+			double varianceImpurtity;
+			double k0 = 0; 
+			double k1 = 0;
+			
 
 			for(int i = 0; i < arraySize; i++){
-				
-			}*/
-			System.out.println(arraySize);
-			return .0;
+				if(bigSet.get(classIndex - 1).get(i) == 0){
+					k0++;
+				} else{
+					k1++;
+				}
+			}
+
+			varianceImpurtity = ((k0 * k1)/((double)arraySize*(double)arraySize));
+			System.out.println(k0*k1);
+			System.out.println(arraySize*arraySize);
+			System.out.println(varianceImpurtity);
+
+			return varianceImpurtity;
 		}
 }
