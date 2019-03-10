@@ -22,6 +22,10 @@ public class Main {
 		try{
 			Main m = new Main(args);
 			m.hashCode();//Just used to get rid of error 
+			Tree tree = new Tree(m.trainingData, m.trainingDataNames);
+			tree.buildDecisonTree();
+			tree.printTree();
+
 		}
 		catch (Exception e) {
 			System.out.println("ERROR");
