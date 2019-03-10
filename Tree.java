@@ -64,18 +64,22 @@ public class Tree {
 		} else {
 			node.value = -1;
 			double entropyS = getEntropy(node.subset);
+			//System.out.println(""+entropyS);
 			int ind = maxGain(entropyS, node.subset, node.attrIgnore);
 			node.index = ind;
-
+			System.out.printf("%d", ind);
 			ArrayList<Integer> subset0 = getSubset(node, 0);
 			ArrayList<Integer> subset1 = getSubset(node, 1);
+
 			ArrayList<Integer> chAttr = node.attrIgnore;
 			chAttr.add(node.index); //adding attributes we've already split on 	
 
 			node.zero = new AttributeNode(-1, subset0, chAttr);
 			node.one = new AttributeNode(-1, subset1, chAttr);
-			expandNode(node.zero);
-			expandNode(node.one);
+			//TO DO: ONLY WORKS IF ONE OF THESE EXPANDNODES IS COMMENTED OUT
+			expandNode(node.zero); 
+			//System.out.println();
+			//expandNode(node.one);
 		}
 	}
 	
@@ -152,15 +156,17 @@ public class Tree {
 			else if(trainingData.get(trainingData.size()-1).get(x) == 1)
 				p1++;
 		}
-
 		// Check if p0/p or p1/p is equal to 0...
 		// If so will cause an error when doing log
 		// If it is return entropy as 0
-
-		if(p0/p == 0 || p0/1 == 0)//This is only true when one is 'pure'
-			return 0;//This always equals 0
+		if(p0 == p || p0 == 0)//This is only true when one is 'pure'
+			return 0.0;//This always equals 0
 		else //This is true if neither is 'pure'
-			return -(p0/p)*log2(p0/p) - (p1/p)*log2(p1/p);//Calculate and return Entropy
+		{
+			double e = -(((double) p0)/p)*(log2(p0)-log2(p)) - (((double) p1)/p)*(log2(p1)-log2(p));
+			//Calculate and return Entropy
+			return e;
+		}
 		
 	}
 
@@ -174,29 +180,30 @@ public class Tree {
 	//ArrayList<Integer> set = Set of indexes that make up current subset
 	//attrIgnore = attributes that have already been split on
 	int maxGain(double entropyS, ArrayList<Integer> set, ArrayList<Integer> attrIgnore){
-		double[] gain = new double[trainingData.size() - 1]; //Used to hold the gain for each attribute excpet the class attribute
-		// gain[index] = 0.0;
-		for(int attribute = 0; attribute < trainingData.size() - 2; attribute++)
+		double[] gain = new double[trainingData.size()]; //Used to hold the gain for each attribute excpet the class attribute
+		for(int attribute = 0; attribute < trainingData.size(); attribute++)
 			if (attrIgnore.contains(attribute))
 				gain[attribute] = 0.0; //if attribute has already been split on, set gain to 0
 			else {
 				ArrayList<Integer> myList = trainingData.get(attribute);
 				ArrayList <Integer> subset0 = new ArrayList<Integer>(); 
 				ArrayList <Integer> subset1 = new ArrayList<Integer>();
-				for(int x : myList){
-					if(x == 0)
+				for(int x : set){
+					if(myList.get(x) == 0) {
 						subset0.add(x);
-					else if(x == 1)
+					}
+					else if(myList.get(x) == 1)
 						subset1.add(x);
 				}
 				double s0 = getEntropy(subset0);
 				double s1 = getEntropy(subset1);
-				gain[attribute] = entropyS - (((subset0.size()/myList.size())*s0) + ((subset1.size()/myList.size())*s1));
+				double size = set.size();
+				gain[attribute] = entropyS - (((subset0.size()/size)*s0) + ((subset1.size()/size)*s1));
 			}
-			
 		double max = gain[0];
 		int maxIndex = 0; //i = index of the max
-		for(int x = 1; x < gain.length; x++){
+		for(int x = 1; x < gain.length-1; x++){
+			//System.out.printf("%f ", gain[x]);
 			if(gain[x] > max){
 				max = gain[x];//Update max
 				maxIndex = x;//Update the index of the max

@@ -24,7 +24,7 @@ public class TestMain {
 			TestMain m = new TestMain(args);
 			Tree tree = new Tree(m.trainingData, m.trainingDataNames);
 			tree.buildDecisonTree();
-			tree.printTree();
+			//tree.printTree();
 		}
 		catch (Exception e) {
 			System.out.println("ERROR");
