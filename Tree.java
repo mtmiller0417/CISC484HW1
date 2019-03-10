@@ -86,7 +86,7 @@ public class Tree {
 	// Will be replaced by heurisitcs
 	int chooseRandomAttribute(ArrayList<Integer> subset){
 		Random random = new Random();
-		return random.nextInt(trainingData.size());
+		return random.nextInt(trainingData.size()-1);
 	}
 
 	// true if subset is pure
