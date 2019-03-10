@@ -187,6 +187,26 @@ public class Tree {
 		}
 		
 	}
+	
+	public double varianceImpurity(ArrayList<Integer> set){
+		int arraySize = set.size();
+		double varianceImpurtity;
+		double k0 = 0, k1 = 0; 
+
+		for(int x : set){
+			if(trainingData.get(trainingData.size()-1).get(x) == 0)
+				k0++;
+			else if(trainingData.get(trainingData.size()-1).get(x) == 1)
+				k1++;
+		}
+		
+		//System.out.println("# k0's = " + k0 + ";  # k1's = " + k1 + ";");
+		//System.out.println(k0*k1);
+		//System.out.println(arraySize*arraySize);
+		//System.out.println(varianceImpurtity);
+
+		return ((k0 * k1)/((double)arraySize*(double)arraySize));
+	}
 
 	//Used to calc log base 2
 	double log2(double d){
