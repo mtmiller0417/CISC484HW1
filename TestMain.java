@@ -12,7 +12,7 @@ public class TestMain {
 	String[] validationDataNames;
 	String[] testingDataNames;
 	// String trainingData1 = "data_sets1/training_set.csv";
-	String trainingData1 = "data_sets1/training_set.csv";
+	String trainingData1 = "data_sets1/trial_set.csv";
 	String validationData1 = "data_sets1/validation_set.csv";
 	String testData1 = "data_sets1/test_set.csv";
 	String trData, vaData, tsData, toPrint;// Space for actual data

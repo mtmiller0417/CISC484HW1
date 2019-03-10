@@ -31,7 +31,9 @@ public class Tree {
 
 		@Override
 		public String toString(){
-			return trainingDataNames[index];
+			if (index != -1)
+				return trainingDataNames[index];
+			else return "";
 		}
 	}
 	
@@ -58,40 +60,38 @@ public class Tree {
 	//Recursive function that expands given node by checking if it is pure 
 	public void expandNode(AttributeNode node){
 		if (isPure(node.subset)) {
-			//System.out.printf("in is pure");
 			node.zero = null;
 			node.one = null;
 			node.value = trainingData.get(trainingData.size() - 1).get(node.subset.get(0));
 		} else {
 			node.value = -1;
 			double entropyS = getEntropy(node.subset);
-			//System.out.println(""+entropyS);
 			int ind = maxGain(entropyS, node.subset, node.attrIgnore);
+			if (ind != -1)
+			{
 			node.index = ind;
-			//System.out.printf("%d", ind);
 			ArrayList<Integer> subset0 = getSubset(node, 0);
 			ArrayList<Integer> subset1 = getSubset(node, 1);
 
 			ArrayList<Integer> chAttr = node.attrIgnore;
 			chAttr.add(node.index); //adding attributes we've already split on 	
-			if (subset0.isEmpty()) {
+			if (subset0.isEmpty()){
 				node.zero = null;
-				node.one = new AttributeNode(-1, subset1, chAttr);
-				node.one.value = 1;
-				node.one.one = node.one.zero = null;
-			}	
-			else if (subset1.isEmpty()) {
-				node.one = null;
-				node.zero = new AttributeNode(-1, subset1, chAttr);
-				node.zero.value = 0;
-				node.zero.zero = node.zero.one = null;
-			}
-			else {
-				node.one = new AttributeNode(-1, subset1, chAttr);
+			} else {
 				node.zero = new AttributeNode(-1, subset0, chAttr);
 				expandNode(node.zero);
+			}
+			if (subset1.isEmpty()){
+				node.one = null;
+			} else {
+				node.one = new AttributeNode(-1, subset1, chAttr);
 				expandNode(node.one);
-			}			
+			}
+			} else {
+				node.one = null;
+				node.zero = null;
+				node.value = -1;	
+			}
 		}
 	}
 	
@@ -128,6 +128,7 @@ public class Tree {
 	// Only use if Node's val leads to leaf node, this is kinda confusing
 	// should probably make more intuitive at some point idk
 	// -1 means subset is empty
+
 	int getResult(AttributeNode node, int val){
 		ArrayList<Integer> subset = getSubset(node, val);
 		if (subset.isEmpty())
@@ -141,22 +142,28 @@ public class Tree {
 		else
 			System.out.println(nodeString(root, ""));
 	}
-
 	public String nodeString(AttributeNode node, String prefix) {
-		String printString = "";
-		printString += prefix + node + " = 0 : ";
-		if (node.zero == null)
-			printString += "" + getResult(node,0) + "\n";
-		else
-			printString += "\n" + nodeString(node.zero, prefix + " | ");
-		printString += prefix + node + " = 1 : ";
-		if (node.one == null)
-			printString += "" + getResult(node,1) + "\n";
-		else
-			printString += "\n" + nodeString(node.one, prefix + " | ");
-		return printString;
-	}
-
+		if (node == null)
+			return prefix;
+		else { 
+			String printString = "";
+			printString += prefix + node + " = 0 : ";
+			if (node.zero != null) {
+				if (node.zero.value != -1)
+					printString += "" + node.zero.value + "\n";
+				else
+					printString += "\n" + nodeString(node.zero, prefix + " | ");
+			} 
+			printString += prefix + node + " = 1 : ";
+			if (node.one != null) {
+				if (node.one.value != -1)
+					printString += "" + node.one.value + "\n";
+				else
+					printString += "\n" + nodeString(node.one, prefix + " | ");
+			}
+			return printString;
+		}
+	}	
 	double getEntropy(ArrayList<Integer> set){
 		int p0 = 0, p1 = 0, p;
 		p = set.size();
@@ -190,36 +197,34 @@ public class Tree {
 	//double entropyS = entropy of the big set, used to calculate entropy gain
 	//ArrayList<Integer> set = Set of indexes that make up current subset
 	//attrIgnore = attributes that have already been split on
+
 	int maxGain(double entropyS, ArrayList<Integer> set, ArrayList<Integer> attrIgnore){
-		double[] gain = new double[trainingData.size()]; //Used to hold the gain for each attribute excpet the class attribute
-		for(int attribute = 0; attribute < trainingData.size(); attribute++)
-			if (attrIgnore.contains(attribute))
-				gain[attribute] = 0.0; //if attribute has already been split on, set gain to 0
-			else {
-				ArrayList<Integer> myList = trainingData.get(attribute);
-				ArrayList <Integer> subset0 = new ArrayList<Integer>(); 
-				ArrayList <Integer> subset1 = new ArrayList<Integer>();
-				for(int x : set){
-					if(myList.get(x) == 0) {
-						subset0.add(x);
-					}
-					else if(myList.get(x) == 1)
-						subset1.add(x);
+		double[] gain = new double[trainingData.size()]; //Used to hold the gain for each attribute 
+		for(int attribute = 0; attribute < trainingData.size(); attribute++) {
+			ArrayList<Integer> myList = trainingData.get(attribute);
+			ArrayList <Integer> subset0 = new ArrayList<Integer>(); 
+			ArrayList <Integer> subset1 = new ArrayList<Integer>();
+			for(int x : set){
+				if(myList.get(x) == 0) {
+					subset0.add(x);
 				}
-				double s0 = getEntropy(subset0);
-				double s1 = getEntropy(subset1);
-				double size = set.size();
-				gain[attribute] = entropyS - (((subset0.size()/size)*s0) + ((subset1.size()/size)*s1));
+				else if(myList.get(x) == 1)
+					subset1.add(x);
 			}
+			double s0 = getEntropy(subset0);
+			double s1 = getEntropy(subset1);
+			double size = set.size();
+			gain[attribute] = entropyS - (((subset0.size()/size)*s0) + ((subset1.size()/size)*s1));
+		}
 		double max = gain[0];
-		int maxIndex = 0; //i = index of the max
+		int maxIndex = 0; 
 		for(int x = 1; x < gain.length-1; x++){
-			//System.out.printf("%f ", gain[x]);
 			if(gain[x] > max){
-				max = gain[x];//Update max
-				maxIndex = x;//Update the index of the max
+				max = gain[x]; //Update max
+				maxIndex = x; //Update the index of the max
 			}
 		}
+			
 		return maxIndex;
 	}
 }
