@@ -1,5 +1,9 @@
 import java.util.*;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 
 // TODO:
@@ -11,12 +15,34 @@ import java.util.*;
 //  	* Use checkResult of parent node's subset and leaf node's value
 //  	  to see what answer a leaf node gives
 
-public class Tree {
+public class Tree implements Serializable{
+    private static final long serialVersionUID = 1L;
 	private AttributeNode root;
 	ArrayList<ArrayList<Integer>> trainingData;
 	String[] trainingDataNames;
 
-	public class AttributeNode {
+	public Tree deepCopy() throws Exception
+	{
+		//Serialization of object
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(bos);
+		out.writeObject(this);
+
+		//De-serialization of object
+		ByteArrayInputStream bis = new   ByteArrayInputStream(bos.toByteArray());
+		ObjectInputStream in = new ObjectInputStream(bis);
+		Tree copied = (Tree) in.readObject();
+
+		//Verify that object is not corrupt
+
+		//validateNameParts(fName);
+		//validateNameParts(lName);
+
+		return copied;
+	}
+
+	public class AttributeNode implements Serializable{
+    private static final long serialVersionUID = 1L;
 		int index;	// location of attribute in super array; leaf nodes have index -1
 		ArrayList<Integer> subset; //array of acceptable index (rows)
 		ArrayList<Integer> attrIgnore; //attributes to ignore (columns);
