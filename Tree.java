@@ -247,4 +247,43 @@ public class Tree {
 			
 		return maxIndex;
 	}
+
+	// Consumes input list, do not include class values in list
+	int traverseTree(ArrayList<Integer> input){
+		if (input.size() != trainingData.size()-1){
+			System.out.println("error, incorrect input size");
+			return -1;
+		}
+		AttributeNode CurNode = root;
+		for (Integer i: input){
+			if (CurNode.value != -1)
+				return CurNode.value;
+			if(i == 0)
+				CurNode = CurNode.zero;
+			if (i == 1)
+				CurNode = CurNode.one;
+		}
+		return -1;
+	}
+	ArrayList<Integer> getInput(
+			ArrayList<ArrayList<Integer>> validationData,
+			int index
+			) 
+	{
+		ArrayList<Integer> result = new ArrayList<>();
+		for(int i = 0; i<trainingData.size()-1; i++) {
+			result.add(validationData.get(i).get(index));
+		}
+		return result;
+	}
+	double getAccuracy(ArrayList<ArrayList<Integer>> validationData) {
+		int totalTreeVal = 0;
+		int totalActual = 0;
+		for(int i = 0; i<validationData.size(); i++) {
+			totalTreeVal += traverseTree(getInput(validationData, i));
+			totalActual += validationData.get(validationData.size()-1).get(i);
+		}
+		return (double) totalTreeVal / (double) totalActual;
+	}
+	
 }
