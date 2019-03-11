@@ -331,5 +331,19 @@ public class Tree implements Serializable{
 		}
 		return (double) totalTreeVal / (double) totalActual;
 	}
+
+	ArrayList<AttributeNode> listAllNodes(){
+		return listSubNodes(root);
+	}
+	ArrayList<AttributeNode> listSubNodes(AttributeNode n){
+		ArrayList<AttributeNode> result =  new ArrayList<>();
+		if (n.value != -1)
+			return result;
+		result.add(n);
+		result.addAll(listSubNodes(n.zero));
+		result.addAll(listSubNodes(n.one));
+		return result;
+	}
+
 	
 }
