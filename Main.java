@@ -11,8 +11,8 @@ public class Main {
 	String[] trainingDataNames;
 	String[] validationDataNames;
 	String[] testingDataNames;
-	//String trainingData1 = "data_sets1/training_set.csv";
-	String trainingData1 = "data_sets1/trial_set.csv";
+	String trainingData1 = "data_sets1/training_set.csv";
+	//String trainingData1 = "data_sets1/trial_set.csv";
 	String validationData1 = "data_sets1/validation_set.csv";
 	String testData1 = "data_sets1/test_set.csv";
 	String trData = null, vaData = null, tsData = null, toPrint = null;// Space for actual data
@@ -30,7 +30,7 @@ public class Main {
 
 	}
 
-	public Main(String [] args)throws IOException{
+	public Main(String [] args)throws Exception{
 
 		if(args.length > 0)
 			L = Integer.parseInt(args[0]);
@@ -45,10 +45,6 @@ public class Main {
 		if(args.length > 5)
 			toPrint = args[5];
 
-		for(String s:args){
-			System.out.println(s);
-		}
-
 		trainingData = new ArrayList<ArrayList<Integer>>();
 		validationData = new ArrayList<ArrayList<Integer>>();
 		testingData = new ArrayList<ArrayList<Integer>>();
@@ -60,7 +56,7 @@ public class Main {
 		if(trData == null)
 			trData = trainingData1;
 		if(vaData == null)
-			vrData = validationData1;
+			vaData = validationData1;
 		if(tsData == null)
 			tsData = testData1;
 
@@ -70,20 +66,47 @@ public class Main {
 
 
 		int entropy = 0, variance = 1;
-		Tree tree = new Tree(trainingData, trainingDataNames, variance);
-		tree.buildDecisonTree();
 
-		toPrint = "yes";//Here just to assume that we want to print ours for testing purposes
+		double acc1, acc2, acc3, acc4;
 
+		//Heuristic one 
+
+		Tree t1 = new Tree(trainingData, validationData ,trainingDataNames, entropy);
+		t1.buildDecisonTree();
 		if(toPrint.equals("yes") || toPrint.equals("Yes"))
-			tree.printTree();
-		/*
-		Tree t = new Tree(m.trainingData, m.trainingDataNames, variance);
-		t.buildDecisonTree();
-		t.printTree();
-		*/
+			t1.printTree();
+		acc1 = t1.getAccuracy(validationData);
 
-		System.out.println(trainingData.get(0).size());
+		//Heuristic two 
+
+		Tree t2 = new Tree(trainingData, validationData ,trainingDataNames, variance);
+		t2.buildDecisonTree();
+		if(toPrint.equals("yes") || toPrint.equals("Yes"))
+			t2.printTree();
+		acc2 = t2.getAccuracy(validationData);
+
+		//Post-pruned heuristic one 
+
+		Tree t3 = t1.postPrune(t1, L, K);
+		if(toPrint.equals("yes") || toPrint.equals("Yes"))
+			t3.printTree();
+		acc3 = t3.getAccuracy(validationData);
+
+		//Post-pruned heuristic two 
+
+		Tree t4 = t2.postPrune(t2, L, K);
+		if(toPrint.equals("yes") || toPrint.equals("Yes"))
+			t4.printTree();
+		acc4 = t4.getAccuracy(validationData);
+
+		//Print all accuracies
+
+		System.out.println("\nACCURACY");
+		System.out.printf("Heristic one accuracy: %.3f\n", acc1);
+		System.out.printf("Heristic two accuracy: %.3f\n", acc2);
+		System.out.printf("Heristic one post-pruned accuracy: %.3f\n", acc3);
+		System.out.printf("Heristic two post-pruned accuracy: %.3f\n", acc4);
+
 	}
 
 		public String[] parseInput(ArrayList<ArrayList<Integer>> set, String[] attNames, String fileLocation) throws IOException{
@@ -95,7 +118,7 @@ public class Main {
 			//Read the first line of the file (attribute names)
 			attNames = line.split(csvSplitby);
 
-			System.out.println("Number of attributes in data set: " + attNames.length);
+			//System.out.println("Number of attributes in data set: " + attNames.length);
 
 			//Read the rest of the data files and store them in appropriate data structure
 
@@ -111,7 +134,7 @@ public class Main {
 				 	set.get(i).add(Integer.parseInt(row[i]));
 			 }
 
-		 	System.out.println("Size " + set.get(0).size());
+		 	//System.out.println("Size " + set.get(0).size());
 
 			br.close();
 
