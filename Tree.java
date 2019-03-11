@@ -311,7 +311,8 @@ public class Tree implements Serializable{
 			if (i == 1)
 				CurNode = CurNode.one;
 		}
-		return -1;
+		Random r = new Random();
+		return r.nextInt(2);
 	}
 	ArrayList<Integer> getInput(
 			ArrayList<ArrayList<Integer>> validationData,
