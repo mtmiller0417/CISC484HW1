@@ -11,7 +11,8 @@ public class Main {
 	String[] trainingDataNames;
 	String[] validationDataNames;
 	String[] testingDataNames;
-	String trainingData1 = "data_sets1/training_set.csv";
+	//String trainingData1 = "data_sets1/training_set.csv";
+	String trainingData1 = "data_sets1/trial_set.csv";
 	String validationData1 = "data_sets1/validation_set.csv";
 	String testData1 = "data_sets1/test_set.csv";
 	String trData, vaData, tsData, toPrint;// Space for actual data
@@ -22,10 +23,15 @@ public class Main {
 		try{
 			Main m = new Main(args);
 			m.hashCode();//Just used to get rid of error 
-			Tree tree = new Tree(m.trainingData, m.trainingDataNames);
+			int entropy = 0, variance = 1;
+			Tree tree = new Tree(m.trainingData, m.trainingDataNames, variance);
 			tree.buildDecisonTree();
 			tree.printTree();
-
+			/*
+			Tree t = new Tree(m.trainingData, m.trainingDataNames, variance);
+			t.buildDecisonTree();
+			t.printTree();
+			*/
 		}
 		catch (Exception e) {
 			System.out.println("ERROR");
