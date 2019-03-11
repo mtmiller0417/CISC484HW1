@@ -15,7 +15,7 @@ public class Main {
 	String trainingData1 = "data_sets1/trial_set.csv";
 	String validationData1 = "data_sets1/validation_set.csv";
 	String testData1 = "data_sets1/test_set.csv";
-	String trData, vaData, tsData, toPrint;// Space for actual data
+	String trData = null, vaData = null, tsData = null, toPrint = null;// Space for actual data
 	int L,K;
 	BufferedReader br;
 
@@ -57,9 +57,16 @@ public class Main {
 		validationDataNames = new String[21];
 		testingDataNames = new String[21];
 
-		trainingDataNames = parseInput(trainingData, trainingDataNames, trainingData1);
-		validationDataNames = parseInput(validationData, validationDataNames, validationData1);
-		testingDataNames = parseInput(testingData, testingDataNames, testData1);
+		if(trData == null)
+			trData = trainingData1;
+		if(vaData == null)
+			vrData = validationData1;
+		if(tsData == null)
+			tsData = testData1;
+
+		trainingDataNames = parseInput(trainingData, trainingDataNames, trData);
+		validationDataNames = parseInput(validationData, validationDataNames, vaData);
+		testingDataNames = parseInput(testingData, testingDataNames, tsData);
 
 
 		int entropy = 0, variance = 1;
