@@ -22,16 +22,6 @@ public class Main {
 	public static void main(String [] args){
 		try{
 			Main m = new Main(args);
-			m.hashCode();//Just used to get rid of error 
-			int entropy = 0, variance = 1;
-			Tree tree = new Tree(m.trainingData, m.trainingDataNames, variance);
-			tree.buildDecisonTree();
-			tree.printTree();
-			/*
-			Tree t = new Tree(m.trainingData, m.trainingDataNames, variance);
-			t.buildDecisonTree();
-			t.printTree();
-			*/
 		}
 		catch (Exception e) {
 			System.out.println("ERROR");
@@ -41,12 +31,20 @@ public class Main {
 	}
 
 	public Main(String [] args)throws IOException{
-		/*L = Integer.parseInt(args[0]);
-		K = Integer.parseInt(args[1]);
-		trData = args[2];
-		vaData = args[3];
-		tsData = args[4];
-		toPrint = args[5];*/
+
+		if(args.length > 0)
+			L = Integer.parseInt(args[0]);
+		if(args.length > 1)
+			K = Integer.parseInt(args[1]);
+		if(args.length > 2)
+			trData = args[2];
+		if(args.length > 3)
+			vaData = args[3];
+		if(args.length > 4)
+			tsData = args[4];
+		if(args.length > 5)
+			toPrint = args[5];
+
 		for(String s:args){
 			System.out.println(s);
 		}
@@ -62,6 +60,21 @@ public class Main {
 		trainingDataNames = parseInput(trainingData, trainingDataNames, trainingData1);
 		validationDataNames = parseInput(validationData, validationDataNames, validationData1);
 		testingDataNames = parseInput(testingData, testingDataNames, testData1);
+
+
+		int entropy = 0, variance = 1;
+		Tree tree = new Tree(trainingData, trainingDataNames, variance);
+		tree.buildDecisonTree();
+
+		toPrint = "yes";//Here just to assume that we want to print ours for testing purposes
+
+		if(toPrint.equals("yes") || toPrint.equals("Yes"))
+			tree.printTree();
+		/*
+		Tree t = new Tree(m.trainingData, m.trainingDataNames, variance);
+		t.buildDecisonTree();
+		t.printTree();
+		*/
 
 		System.out.println(trainingData.get(0).size());
 	}
