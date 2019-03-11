@@ -15,6 +15,7 @@ public class Tree {
 	private AttributeNode root;
 	ArrayList<ArrayList<Integer>> trainingData;
 	String[] trainingDataNames;
+	int heuristicNumber;
 
 	public class AttributeNode {
 		int index;	// location of attribute in super array; leaf nodes have index -1
@@ -37,9 +38,11 @@ public class Tree {
 		}
 	}
 	
-	public Tree(ArrayList<ArrayList<Integer>> data, String[] names) {
+	//If heuristicNumber is 0, will run Entropy heuristic, if 1, will run varianceImpurity heruistic
+	public Tree(ArrayList<ArrayList<Integer>> data, String[] names, int heuristicNumber) {
 		this.trainingData = data;
 		this.trainingDataNames = names;
+		this.heuristicNumber = heuristicNumber;
 	}
 
 	
@@ -65,8 +68,15 @@ public class Tree {
 			node.value = trainingData.get(trainingData.size() - 1).get(node.subset.get(0));
 		} else {
 			node.value = -1;
-			double entropyS = getEntropy(node.subset);
-			int ind = maxGain(entropyS, node.subset, node.attrIgnore);
+			//double entropyS = getEntropy(node.subset);
+			double gainS = getEntropy(node.subset);;
+			if(heuristicNumber == 0)
+				gainS = getEntropy(node.subset);
+			/*else if(heuristicNumber == 1)
+				gainS = varianceImpurity(node.subset);*/
+
+			int ind = maxGain(gainS, node.subset, node.attrIgnore);
+			System.out.println("Maximizing Index: " + ind);
 			if (ind != -1)
 			{
 			node.index = ind;
@@ -190,8 +200,7 @@ public class Tree {
 	
 	public double varianceImpurity(ArrayList<Integer> set){
 		int arraySize = set.size();
-		double varianceImpurtity;
-		double k0 = 0, k1 = 0; 
+		double k0 = 0, k1 = 0, varianceImpurity; 
 
 		for(int x : set){
 			if(trainingData.get(trainingData.size()-1).get(x) == 0)
@@ -199,11 +208,10 @@ public class Tree {
 			else if(trainingData.get(trainingData.size()-1).get(x) == 1)
 				k1++;
 		}
-		
-		//System.out.println("# k0's = " + k0 + ";  # k1's = " + k1 + ";");
-		//System.out.println(k0*k1);
-		//System.out.println(arraySize*arraySize);
-		//System.out.println(varianceImpurtity);
+
+		//Checks and will stop NaN errors
+		if(k0 ==  arraySize|| k0 == arraySize)//This is only true when one is 'pure'
+			return 0.0;//This always equals 0
 
 		return ((k0 * k1)/((double)arraySize*(double)arraySize));
 	}
@@ -218,7 +226,7 @@ public class Tree {
 	//ArrayList<Integer> set = Set of indexes that make up current subset
 	//attrIgnore = attributes that have already been split on
 
-	int maxGain(double entropyS, ArrayList<Integer> set, ArrayList<Integer> attrIgnore){
+	int maxGain(double gainS, ArrayList<Integer> set, ArrayList<Integer> attrIgnore){
 		double[] gain = new double[trainingData.size()]; //Used to hold the gain for each attribute 
 		for(int attribute = 0; attribute < trainingData.size(); attribute++) {
 			ArrayList<Integer> myList = trainingData.get(attribute);
@@ -231,10 +239,21 @@ public class Tree {
 				else if(myList.get(x) == 1)
 					subset1.add(x);
 			}
-			double s0 = getEntropy(subset0);
-			double s1 = getEntropy(subset1);
-			double size = set.size();
-			gain[attribute] = entropyS - (((subset0.size()/size)*s0) + ((subset1.size()/size)*s1));
+			double s0 = 0, s1 = 0, size = set.size();
+			if(heuristicNumber == 0){
+				s0 = getEntropy(subset0);
+				s1 = getEntropy(subset1);
+				gain[attribute] = gainS - (((subset0.size()/size)*s0) + ((subset1.size()/size)*s1));
+			}
+			else if(heuristicNumber == 1){
+				s0 = varianceImpurity(subset0);
+				s1 = varianceImpurity(subset1);
+				if(size == 0)
+					System.exit(-1);
+				gain[attribute] = 1 - (((double)subset0.size()/size)*s0 + ((double)subset1.size()/size)*s1);
+			}
+			
+			
 		}
 		double max = gain[0];
 		int maxIndex = 0; 
@@ -244,7 +263,8 @@ public class Tree {
 				maxIndex = x; //Update the index of the max
 			}
 		}
-			
+
+		System.out.println(max);
 		return maxIndex;
 	}
 }
