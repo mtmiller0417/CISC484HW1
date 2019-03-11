@@ -104,7 +104,7 @@ public class Tree implements Serializable{
 				gainS = varianceImpurity(node.subset);*/
 
 			int ind = maxGain(gainS, node.subset, node.attrIgnore);
-			System.out.println("Maximizing Index: " + ind);
+			//System.out.println("Maximizing Index: " + ind);
 			if (ind != -1)
 			{
 			node.index = ind;
@@ -276,8 +276,8 @@ public class Tree implements Serializable{
 			else if(heuristicNumber == 1){
 				s0 = varianceImpurity(subset0);
 				s1 = varianceImpurity(subset1);
-				if(size == 0)
-					System.exit(-1);
+				/*if(size == 0)
+					System.exit(-1);*/
 				gain[attribute] = 1 - (((double)subset0.size()/size)*s0 + ((double)subset1.size()/size)*s1);
 			}
 			
@@ -292,7 +292,7 @@ public class Tree implements Serializable{
 			}
 		}
 
-		System.out.println(max);
+		//System.out.println(max);
 		return maxIndex;
 	}
 
