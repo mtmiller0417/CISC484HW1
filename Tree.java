@@ -16,9 +16,10 @@ import java.io.Serializable;
 //  	  to see what answer a leaf node gives
 
 public class Tree implements Serializable{
-    private static final long serialVersionUID = 1L;
-	private AttributeNode root;
+    	private static final long serialVersionUID = 1L;
+	AttributeNode root;
 	ArrayList<ArrayList<Integer>> trainingData;
+	ArrayList<ArrayList<Integer>> validationData;
 	String[] trainingDataNames;
 	int heuristicNumber;
 
@@ -43,7 +44,7 @@ public class Tree implements Serializable{
 	}
 
 	public class AttributeNode implements Serializable{
-    private static final long serialVersionUID = 1L;
+    		private static final long serialVersionUID = 1L;
 		int index;	// location of attribute in super array; leaf nodes have index -1
 		ArrayList<Integer> subset; //array of acceptable index (rows)
 		ArrayList<Integer> attrIgnore; //attributes to ignore (columns);
@@ -65,8 +66,9 @@ public class Tree implements Serializable{
 	}
 	
 	//If heuristicNumber is 0, will run Entropy heuristic, if 1, will run varianceImpurity heruistic
-	public Tree(ArrayList<ArrayList<Integer>> data, String[] names, int heuristicNumber) {
-		this.trainingData = data;
+	public Tree(ArrayList<ArrayList<Integer>> tdata, ArrayList<ArrayList<Integer>> vdata, String[] names, int heuristicNumber) {
+		this.trainingData = tdata;
+		this.validationData = vdata;
 		this.trainingDataNames = names;
 		this.heuristicNumber = heuristicNumber;
 	}
@@ -345,5 +347,54 @@ public class Tree implements Serializable{
 		return result;
 	}
 
+	public int nonLeafNodes(AttributeNode n){
+		if (n == null)
+			return 0;
+		else if (n.zero == null && n.one == null)
+			return 0;
 	
+		return 1 + nonLeafNodes(n.zero) + nonLeafNodes(n.one);	
+	}
+
+	public Tree postPrune(Tree D, int L, int K) throws Exception{
+		Tree Dbest = D.deepCopy();
+		for(int i = 1; i < L; i++){
+			Tree D1 = D.deepCopy();
+			Random random = new Random();
+			int M = random.nextInt(K-1)+1; //to generate random number between 1 and K
+			for(int j = 1; j < M; j++){
+				int N = D1.nonLeafNodes(D1.root);
+				int P = random.nextInt(N); //to generate random number between 1 and N
+				ArrayList<AttributeNode> l = D1.listAllNodes();
+				AttributeNode replace = l.get(P);
+				int c0 = 0;
+				int c1 = 0;
+				for(int x: replace.subset)
+					if (D1.trainingData.get(trainingData.size() - 1).get(x) == 0)
+						c0++;
+					else
+						c1++;
+			
+				replace.index = -1; //mark as leaf node	
+				replace.zero = null;
+				replace.one = null;
+			
+				if (c0 > c1){
+					replace.value = 0;
+				} else
+					replace.value = 1;
+			}
+		//evaluate accuracy of D1 and Dbest
+
+		double d1Accuracy = D1.getAccuracy(D1.validationData);
+		double dbAccuracy = Dbest.getAccuracy(Dbest.validationData);	
+		//System.out.printf("DBest accuracy: %f D1 accuracy %f", dbAccuracy, d1Accuracy);
+		//System.out.println();
+		if (d1Accuracy > dbAccuracy)
+			Dbest = D1;
+		}
+		
+		//return Dbest	
+		return Dbest;	
+	}
 }
