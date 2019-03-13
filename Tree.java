@@ -311,7 +311,8 @@ public class Tree implements Serializable{
 			if (i == 1)
 				CurNode = CurNode.one;
 		}
-		return -1;
+		Random r = new Random();
+		return r.nextInt(2);
 	}
 	ArrayList<Integer> getInput(
 			ArrayList<ArrayList<Integer>> validationData,
@@ -325,13 +326,12 @@ public class Tree implements Serializable{
 		return result;
 	}
 	double getAccuracy(ArrayList<ArrayList<Integer>> validationData) {
-		int totalTreeVal = 0;
-		int totalActual = 0;
-		for(int i = 0; i<validationData.size(); i++) {
-			totalTreeVal += traverseTree(getInput(validationData, i));
-			totalActual += validationData.get(validationData.size()-1).get(i);
+		int numCorrect=0;
+		for(int i = 0; i<validationData.get(0).size(); i++) {
+			if (traverseTree(getInput(validationData, i)) == validationData.get(validationData.size()-1).get(i))
+				numCorrect ++;
 		}
-		return (double) totalTreeVal / (double) totalActual;
+		return (double) numCorrect / (double) validationData.get(0).size(); 
 	}
 
 	ArrayList<AttributeNode> listAllNodes(){
