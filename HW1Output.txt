@@ -1,3 +1,12 @@
+Data Set 1:
+Accuracy on testingData w/ Heuristic One: 0.514
+Accuracy on testingData w/ Heuristic Two: 0.4995
+
+Data Set 2:
+Accuracy on testingData w/ Heuristic One: 0.514
+Accuracy on testingData w/ Heuristic Two: 0.4995
+
+
 L = 10; K = 5;
 Heristic one accuracy: 0.508
 Heristic two accuracy: 0.511
