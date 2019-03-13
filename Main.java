@@ -78,7 +78,7 @@ public class Main {
 		tree1.buildDecisonTree();
 		acc = tree1.getAccuracy(testingData);
 
-		System.out.println("\nAccuracy on testingData w/ Heuristic Two: " + acc);
+		System.out.println("Accuracy on testingData w/ Heuristic Two: " + acc);
 
 		//Heuristic one 
 
