@@ -64,10 +64,21 @@ public class Main {
 		validationDataNames = parseInput(validationData, validationDataNames, vaData);
 		testingDataNames = parseInput(testingData, testingDataNames, tsData);
 
-
 		int entropy = 0, variance = 1;
 
-		double acc1, acc2, acc3, acc4;
+		double acc, acc1, acc2, acc3, acc4;
+
+		Tree tree0 = new Tree(trainingData, validationData, trainingDataNames, entropy);
+		tree0.buildDecisonTree();
+		acc = tree0.getAccuracy(testingData);
+
+		System.out.println("\nAccuracy on testingData w/ Heuristic One: " + acc);
+
+		Tree tree1 = new Tree(trainingData, validationData, trainingDataNames, variance);
+		tree1.buildDecisonTree();
+		acc = tree1.getAccuracy(testingData);
+
+		System.out.println("\nAccuracy on testingData w/ Heuristic Two: " + acc);
 
 		//Heuristic one 
 

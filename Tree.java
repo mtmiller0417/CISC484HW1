@@ -117,13 +117,23 @@ public class Tree implements Serializable{
 				node.zero = null;
 			} else {
 				node.zero = new AttributeNode(-1, subset0, chAttr);
-				expandNode(node.zero);
+				if(contradictionCheck(node.zero.subset) == true){
+					node.zero.value = (int)(Math.random() * 1 + 1);//Choose a random value bc of contradiction
+					//node.zero = null;
+				}
+				else
+					expandNode(node.zero);
 			}
 			if (subset1.isEmpty()){
 				node.one = null;
 			} else {
 				node.one = new AttributeNode(-1, subset1, chAttr);
-				expandNode(node.one);
+				if(contradictionCheck(node.one.subset) == true){
+					node.one.value = (int)(Math.random() * 1 + 1);//Choose a random value bc of contradiction
+					//node.one = null;
+				}
+				else
+					expandNode(node.one);
 			}
 			} else {
 				node.one = null;
@@ -131,6 +141,32 @@ public class Tree implements Serializable{
 				node.value = -1;	
 			}
 		}
+	}
+
+	boolean contradictionCheck(ArrayList<Integer> set){
+		//boolean flag = true;
+		int[] array = new int[trainingData.size()];
+		for(int i = 0; i < trainingData.size(); i++)
+			array[i] = trainingData.get(i).get(set.get(0));
+
+		for(int x = 1; x < set.size(); x++){ // Each element in set
+			for(int y = 0; y < trainingData.size()-1; y++){
+				if(array[y] != trainingData.get(y).get(set.get(x)))
+					return false;
+			}
+		}
+		// All elements in set are equal in terms of attributes, now must check classes
+		for(int x = 1; x < set.size(); x++){
+			if(array[trainingData.size()-1] != trainingData.get(trainingData.size()-1).get(set.get(x))){
+				for(int i : set){
+					//System.out.print(i + " ");
+				}
+				//System.out.print("\n");
+				//System.exit(-1);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	// Returns the subset of usable data at an attribue node
@@ -304,6 +340,8 @@ public class Tree implements Serializable{
 		}
 		AttributeNode CurNode = root;
 		for (Integer i: input){
+			//System.out.println(CurNode.value);
+			//System.exit(-1);
 			if (CurNode.value != -1)
 				return CurNode.value;
 			if(i == 0)
